@@ -1,71 +1,127 @@
-<!DOCTYPE html>
-<html lang="id">
+<!DOCTYPE html><html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RyuuMarket</title>
-  <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Upload Testimoni</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #020617;
+      padding: 20px;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 30px auto;
+      background: #020617;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    form input, form textarea, form button {
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      font-size: 14px;
+    }
+    form input, form textarea {
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+    form button {
+      background: #22c55e;
+      color: #022c22;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .testimoni {
+      margin-top: 30px;
+    }
+    .card {
+      background: #0f172a;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    .card h3 {
+      margin: 0 0 5px 0;
+      font-size: 16px;
+    }
+    .card p {
+      margin: 0;
+      font-size: 14px;
+      color: #cbd5f5;
+    }
+    .card img {
+      max-width: 100%;
+      margin-top: 10px;
+      border-radius: 6px;
+    }
+  </style>
 </head>
-<body>
-  <!-- Navbar -->
-  <nav>
-    <div class="logo">RyuuMarket</div>
-    <ul>
-      <li><a href="#home">Home</a></li>
-      <li><a href="#services">Layanan</a></li>
-      <li><a href="#contact">Kontak</a></li>
-    </ul>
-  </nav>
+<body><header>
+  <h1>Testimoni RyuuMarket </h1>
+</header><div class="container">
+  <h2>Kirim Testimoni</h2>
+  <form id="formTestimoni">
+    <input type="text" id="nama" placeholder="Nama Anda" required />
+    <textarea id="pesan" placeholder="Tulis testimoni Anda" required></textarea>
+    <input type="file" id="gambar" accept="image/*" />
+    <button type="submit">Upload Testimoni</button>
+  </form>  <div class="testimoni" id="listTestimoni"></div>
+</div><script>
+  const form = document.getElementById('formTestimoni');
+  const list = document.getElementById('listTestimoni');
 
-  <!-- Hero Section -->
-  <section id="home" class="hero">
-    <h1>Selamat Datang di RyuuMarket</h1>
-    <p>Layanan Followers & Likes TikTok, Instagram, dan Media Sosial Lainnya</p>
-    <a href="#services" class="btn">Lihat Layanan</a>
-  </section>
+  const data = JSON.parse(localStorage.getItem('testimoni')) || [];
+  data.forEach(t => tampilkan(t));
 
-  <!-- Services Section -->
-  <section id="services" class="services">
-    <h2>Layanan Kami</h2>
-    <div class="cards">
-      <div class="card">
-        <h3>Followers TikTok</h3>
-        <ul>
-          <li>100 Followers: 6,000</li>
-          <li>200 Followers: 12,000</li>
-          <li>300 Followers: 18,000</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3>Likes TikTok</h3>
-        <ul>
-          <li>100 Likes: 5,000</li>
-          <li>500 Likes: 20,000</li>
-          <li>1,000 Likes: 35,000</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3>Instagram</h3>
-        <ul>
-          <li>100 Followers: 10,000</li>
-          <li>500 Followers: 45,000</li>
-          <li>1,000 Followers: 80,000</li>
-        </ul>
-      </div>
-    </div>
-  </section>
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const nama = document.getElementById('nama').value;
+    const pesan = document.getElementById('pesan').value;
+    const gambar = document.getElementById('gambar').files[0];
 
-  <!-- Contact Section -->
-  <section id="contact" class="contact">
-    <h2>Kontak Kami</h2>
-    <p>Hubungi via WhatsApp: <a href="https://wa.me/6281234567890" target="_blank">+62 812-3456-7890</a></p>
-  </section>
+    if (gambar) {
+      const reader = new FileReader();
+      reader.onload = function() {
+        simpan({ nama, pesan, gambar: reader.result });
+      };
+      reader.readAsDataURL(gambar);
+    } else {
+      simpan({ nama, pesan, gambar: null });
+    }
 
-  <footer>
-    <p>&copy; 2026 RyuuMarket | All Rights Reserved</p>
-  </footer>
+    form.reset();
+  });
 
-  <script src="script.js"></script>
-</body>
+  function simpan(obj) {
+    data.push(obj);
+    localStorage.setItem('testimoni', JSON.stringify(data));
+    tampilkan(obj);
+  }
+
+  function tampilkan(t) {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `<h3>${t.nama}</h3><p>${t.pesan}</p>`;
+    if (t.gambar) {
+      const img = document.createElement('img');
+      img.src = t.gambar;
+      card.appendChild(img);
+    }
+    list.prepend(card);
+  }
+</script></body>
 </html>
